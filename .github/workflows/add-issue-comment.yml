@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Add to index
-        uses: chuckmeyer/add-algolia-record
+        uses: chuckmeyer/add-algolia-record@384fde0f8c80368ba4d3b124d3a3613b3df61a5b
         with:
           app_id: ${{ secrets.ALGOLIA_APP_ID }}
           api_key: ${{ secrets.ALGOLIA_API_KEY }}
