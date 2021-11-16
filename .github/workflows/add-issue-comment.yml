@@ -9,8 +9,21 @@ on:
     types:
       - opened
 jobs:
+  search:
+    runs-on: ubuntu-latest
+    outputs: 
+      comment_body: ${{ steps.one.outputs.comment_body }}
+    steps:
+      - id: one
+        name: Search based on issue title
+        uses: chuckmeyer/algolia-issue-search@38135439cd55c32305076407f0cb382d68827b2d
+        with: 
+          app_id: ${{ secrets.ALGOLIA_APP_ID }}
+          api_key: ${{ secrets.ALGOLIA_API_KEY }}
+          index_name: ${{ github.event.repository.name }}
+          issue_title: ${{ github.event.issue.title }}
   add-comment:
-    needs: add-index-record
+    needs: search
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -18,10 +31,12 @@ jobs:
       - name: Add comment
         uses: peter-evans/create-or-update-comment@a35cf36e5301d70b76f316e867e7788a55a31dae
         with:
+          token: ${{ github.token }}
           issue-number: ${{ github.event.issue.number }}
-          body: "Successfully indexed issue ${{ needs.add-index-record.outputs.object_id }}."
+          body: ${{ needs.search.outputs.comment_body }}
   add-index-record:
     runs-on: ubuntu-latest
+    needs: add-comment
     outputs: 
       object_id: ${{ steps.index_step.outputs.object_id }}
     steps:
@@ -33,5 +48,9 @@ jobs:
           api_key: ${{ secrets.ALGOLIA_API_KEY }}
           index_name: ${{ github.event.repository.name }}
           record: |
-            {"title": "${{ github.event.issue.title }}", "url": "${{ github.event.issue.html_url }}", "labels": "${{ github.event.issue.labels }}",
-             "objectID": "${{ github.event.issue.number }}"}
+            {
+              "title": "${{ github.event.issue.title }}", 
+              "url": "${{ github.event.issue.html_url }}", 
+              "labels": "${{ github.event.issue.labels }}",
+              "objectID": "${{ github.event.issue.number }}"
+            }
