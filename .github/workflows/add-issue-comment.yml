@@ -22,6 +22,7 @@ jobs:
           api_key: ${{ secrets.ALGOLIA_API_KEY }}
           index_name: ${{ github.event.repository.name }}
           issue_title: ${{ github.event.issue.title }}
+          max_results: 5
   add-comment:
     needs: search
     runs-on: ubuntu-latest
