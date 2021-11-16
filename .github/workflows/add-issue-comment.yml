@@ -10,6 +10,7 @@ on:
       - opened
 jobs:
   add-comment:
+    needs: add-index-record
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -19,12 +20,14 @@ jobs:
         with:
           issue-number: ${{ github.event.issue.number }}
           body: |
-            This issue is available for anyone to work on. **Make sure to reference this issue in your pull request.** :sparkles: Thank you for your
-            contribution! :sparkles:
+            Successfully indexed issue ${{  needs.add-index-record.outputs.object_id }}.
   add-index-record:
     runs-on: ubuntu-latest
+    outputs: 
+      object_id: ${{ steps.index_step.outputs.object_id }}
     steps:
       - name: Add to index
+        id: index_step
         uses: chuckmeyer/add-algolia-record@v0
         with:
           app_id: ${{ secrets.ALGOLIA_APP_ID }}
