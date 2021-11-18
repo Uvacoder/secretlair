@@ -43,7 +43,7 @@ jobs:
     steps:
       - name: Add to index
         id: index_step
-        uses: chuckmeyer/add-algolia-record@v0
+        uses: chuckmeyer/add-algolia-record@v1
         with:
           app_id: ${{ secrets.ALGOLIA_APP_ID }}
           api_key: ${{ secrets.ALGOLIA_API_KEY }}
